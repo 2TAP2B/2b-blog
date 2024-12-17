@@ -6,17 +6,8 @@ tags: ['reverse-proxy', 'opensource', 'ssl', 'traefik']
 image: './traefik.png'
 authors: ['tobias']
 ---
-## Willkommen zu meinem ersten Blogpost!
 
-Hallo und herzlich willkommen zu meinem Blog! Ich bin Algeire, ein IT-Journalist und Tech-Blogger mit einem Hintergrund in der IT-Branche. In diesem Blog möchte ich mit euch mein Wissen teilen und praktische Anleitungen sowie interessante Einblicke aus der Welt der Technologie liefern. 
-
-In meinem ersten Beitrag zeige ich euch, wie ihr **Traefik** als Reverse Proxy mit Docker Compose einrichtet. Traefik ist ein beliebter, cloud-nativer Reverse Proxy, der sich hervorragend für den Einsatz in containerisierten Umgebungen eignet. 
-
-Lasst uns loslegen!
-
----
-
-## Was ist ein Reverse Proxy, und warum Traefik?
+## 1. Was ist ein Reverse Proxy, und warum Traefik?
 
 Ein Reverse Proxy ist ein Server, der eingehenden Traffic von Clients entgegennimmt und an Backend-Dienste weiterleitet. Dadurch werden Vorteile wie:
 
@@ -29,7 +20,7 @@ Traefik sticht dabei hervor, da es speziell für dynamische, containerisierte Um
 
 ---
 
-## Voraussetzungen
+## 2. Voraussetzungen
 
 Bevor wir starten, stellt sicher, dass folgende Voraussetzungen erfüllt sind:
 
@@ -39,60 +30,148 @@ Bevor wir starten, stellt sicher, dass folgende Voraussetzungen erfüllt sind:
 
 ---
 
-## Schritt 1: Projektverzeichnis erstellen
+## 3. Projektverzeichnis erstellen
 
 Beginnen wir damit, ein Projektverzeichnis zu erstellen, in dem alle Konfigurationsdateien liegen:
 
 ```bash
 mkdir traefik-docker-setup
 cd traefik-docker-setup
+mkdir config
+touch config/traefik.yaml
 ```
 
 ---
 
-## Schritt 2: `docker-compose.yml` erstellen
+## 4. `docker-compose.yml` erstellen
 
 Erstellt eine neue Datei namens `docker-compose.yml` mit folgendem Inhalt:
 
-```yaml
-version: '3.9'
+```shell
+nano docker-compose.yml
+```
 
+```yaml title="docker-compose.yml"
+---
 services:
   traefik:
-    image: traefik:v2.10
+    image: docker.io/library/traefik:v3.2.3
     container_name: traefik
-    command:
-      - "--api.insecure=true" # Aktiviert das Traefik-Dashboard (nicht für Produktion empfohlen!)
-      - "--providers.docker=true" # Aktiviert Docker als Konfigurationsquelle
-      - "--entrypoints.web.address=:80" # Definiert den HTTP-Eingangspunkt
     ports:
-      - "80:80" # Weiterleitung von Port 80
-      - "8080:8080" # Zugriff auf das Traefik-Dashboard
+      - 80:80
+      - 443:443
+      # --> (Optional) Enable Dashboard, don't do in production
+      - 8080:8080
+      # <--
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock" # Docker-Socket für automatische Service-Erkennung
+      - /run/docker.sock:/run/docker.sock:ro
+      - ./config/traefik.yaml:/etc/traefik/traefik.yaml:ro
+      - ./data/certs/:/var/traefik/certs/:rw
+      - ./config/conf.d/:/etc/traefik/conf.d/:ro
+    environment:
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN} # <-- Change this to your Cloudflare API Token
     networks:
-      - web
-
+      - frontend
+    restart: unless-stopped
 networks:
-  web:
-    external: true
+  frontend:
+    external: true # <-- (Optional) Change this to false if you want to create a new network
 ```
 
 Diese Datei definiert den Traefik-Service und seine Konfiguration. Die **Docker-Socket**-Verbindung erlaubt Traefik, automatisch Dienste zu erkennen, die mit Docker laufen.
 
 ---
 
-## Schritt 3: Netzwerk erstellen
+## 5. Netzwerk erstellen
 
 Traefik benötigt ein Docker-Netzwerk, um mit anderen Diensten zu kommunizieren. Erstellt das Netzwerk mit folgendem Befehl:
 
 ```bash
-docker network create web
+docker network create frontend
 ```
 
 ---
 
-## Schritt 4: Traefik starten
+## 6. `traefik.yaml` erstellen
+
+```shell
+nano config/traefik.yaml
+```
+
+```yaml title="traefik.yaml"
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+
+# --> (Optional) Change log level and format here ...
+#     - level: [TRACE, DEBUG, INFO, WARN, ERROR, FATAL]
+# log:
+#  level: ERROR
+# <--
+
+# --> (Optional) Enable accesslog here ...
+# accesslog: {}
+# <--
+
+# --> (Optional) Enable API and Dashboard here, don't do in production
+api:
+  dashboard: true
+  insecure: true
+# <--
+
+# -- Change EntryPoints here...
+entryPoints:
+  web:
+    address: :80
+    # --> (Optional) Redirect all HTTP to HTTPS
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+    # <--
+  websecure:
+    address: :443
+
+# -- Configure your CertificateResolver here...
+certificatesResolvers:
+  cloudflare:
+    acme:
+      email: deinemail@domain.de  # <-- Change this to your email
+      storage: /var/traefik/certs/cloudflare-acme.json
+      caServer: "https://acme-v02.api.letsencrypt.org/directory"
+      dnsChallenge:
+        provider: cloudflare # <-- (Optional) Change this to your DNS provider
+        resolvers:
+          - "1.1.1.1:53"
+          - "8.8.8.8:53"
+
+# --> (Optional) Disable TLS Cert verification check
+# serversTransport:
+#   insecureSkipVerify: true
+# <--
+
+providers:
+  docker:
+    exposedByDefault: false  # <-- (Optional) Change this to true if you want to expose all services
+  file:
+    directory: /etc/traefik
+    watch: true
+```
+
+---
+
+## 7. `.env` anlegen 
+
+```shell
+nano .env
+```
+
+```env title=".env"
+CF_DNS_API_TOKEN = 'cloudflare api token'
+```
+
+## 8. Traefik starten
 
 Startet Traefik mit dem Befehl:
 
@@ -104,44 +183,4 @@ Nach wenigen Sekunden sollte Traefik laufen. Ihr könnt das Dashboard über `htt
 
 ---
 
-## Schritt 5: Einen Beispielservice hinzufügen
 
-Jetzt fügen wir einen Beispielservice hinzu, um zu sehen, wie Traefik das Routing übernimmt. Bearbeitet eure `docker-compose.yml` und fügt folgenden Service hinzu:
-
-```yaml
-  whoami:
-    image: traefik/whoami
-    container_name: whoami
-    labels:
-      - "traefik.http.routers.whoami.rule=Host(`whoami.localhost`)" # Routing basierend auf Hostname
-    networks:
-      - web
-```
-
-Aktualisiert den Traefik-Dienst und startet alles neu:
-
-```bash
-docker-compose up -d
-```
-
-Fügt jetzt `whoami.localhost` zu eurer Hosts-Datei hinzu:
-
-```bash
-echo "127.0.0.1 whoami.localhost" | sudo tee -a /etc/hosts
-```
-
-Besucht `http://whoami.localhost` in eurem Browser, um den Beispielservice zu testen.
-
----
-
-## Fazit
-
-Ihr habt erfolgreich Traefik als Reverse Proxy mit Docker Compose eingerichtet und einen Beispielservice hinzugefügt. Von hier aus könnt ihr SSL mit Let's Encrypt, Load Balancing und vieles mehr implementieren.
-
-Wenn euch dieser Beitrag gefallen hat, bleibt dran! In meinem nächsten Artikel tauchen wir tiefer in Traefik-Konfigurationen und Sicherheit ein.
-
-Habt ihr Fragen oder Anregungen? Lasst es mich in den Kommentaren wissen!
-
-Bis bald,
-
-Algeire
