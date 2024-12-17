@@ -25,13 +25,13 @@ export const SITE: Site = {
 export const NAV_LINKS: Link[] = [
   { href: '/blog', label: 'blog' },
   { href: '/authors', label: 'authors' },
-  { href: '/about', label: 'about' },
+ // { href: '/about', label: 'about' },
   { href: '/tags', label: 'tags' },
 ]
 
 export const SOCIAL_LINKS: Link[] = [
   { href: 'https://github.com/2TAP2B', label: 'GitHub' },
-  { href: '#', label: 'Twitter' },
+  { href: 'https://matrix.to/#/@tobias:xanten.cc', label: 'Matrix' },
   { href: 'tobias@steltner.cc', label: 'Email' },
   { href: '/rss.xml', label: 'RSS' },
 ]
