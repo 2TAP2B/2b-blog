@@ -1,7 +1,7 @@
 ---
-title: 'Traefik als Grundgerüst der Anleitungen'
-description: 'Yopass ist eine Open-Source-Plattform zur sicheren und schnellen Übermittlung vertraulicher Daten.'
-date: 2024-10-05
+title: 'Traefik mit Docker Compose installieren'
+description: 'Traefik ist ein moderner Reverse Proxy, perfekt für containerisierte Umgebungen. Automatische Service-Erkennung & einfache Konfiguration.'
+date: 2024-12-17
 tags: ['reverse-proxy', 'opensource', 'ssl', 'traefik']
 image: './traefik.png'
 authors: ['tobias']
@@ -9,14 +9,9 @@ authors: ['tobias']
 
 ## 1. Was ist ein Reverse Proxy, und warum Traefik?
 
-Ein Reverse Proxy ist ein Server, der eingehenden Traffic von Clients entgegennimmt und an Backend-Dienste weiterleitet. Dadurch werden Vorteile wie:
+Als Reverse Proxy nutze ich gerne Traefik. Es sticht besonders hervor, da es speziell für dynamische, containerisierte Umgebungen wie Docker entwickelt wurde. Traefik unterstützt die automatische Service-Erkennung und ist einfach zu konfigurieren.
 
-- Lastverteilung
-- SSL/TLS-Verschlüsselung
-- Routing basierend auf Hostnamen oder Pfaden
-- Zentrale Verwaltung mehrerer Dienste 
-
-Traefik sticht dabei hervor, da es speziell für dynamische, containerisierte Umgebungen wie Docker entwickelt wurde. Es unterstützt automatische Service-Erkennung und ist einfach zu konfigurieren.
+Ein Reverse Proxy fungiert als Vermittler zwischen Clients (z. B. Webbrowsern) und Servern. Er leitet Anfragen der Clients an die richtigen Server weiter, verwaltet Lastverteilung, sichert die Kommunikation mit SSL/TLS
 
 ---
 
@@ -60,7 +55,7 @@ services:
     ports:
       - 80:80
       - 443:443
-      # --> (Optional) Enable Dashboard, don't do in production
+      # --> (Optional) aktiviere dashboard, don't do in production
       - 8080:8080
       # <--
     volumes:
@@ -69,13 +64,13 @@ services:
       - ./data/certs/:/var/traefik/certs/:rw
       - ./config/conf.d/:/etc/traefik/conf.d/:ro
     environment:
-      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN} # <-- Change this to your Cloudflare API Token
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN} 
     networks:
       - frontend
     restart: unless-stopped
 networks:
   frontend:
-    external: true # <-- (Optional) Change this to false if you want to create a new network
+    external: true 
 ```
 
 Diese Datei definiert den Traefik-Service und seine Konfiguration. Die **Docker-Socket**-Verbindung erlaubt Traefik, automatisch Dienste zu erkennen, die mit Docker laufen.
@@ -103,57 +98,36 @@ global:
   checkNewVersion: false
   sendAnonymousUsage: false
 
-# --> (Optional) Change log level and format here ...
-#     - level: [TRACE, DEBUG, INFO, WARN, ERROR, FATAL]
-# log:
-#  level: ERROR
-# <--
-
-# --> (Optional) Enable accesslog here ...
-# accesslog: {}
-# <--
-
-# --> (Optional) Enable API and Dashboard here, don't do in production
-api:
   dashboard: true
   insecure: true
-# <--
 
-# -- Change EntryPoints here...
+
 entryPoints:
   web:
     address: :80
-    # --> (Optional) Redirect all HTTP to HTTPS
     http:
       redirections:
         entryPoint:
           to: websecure
           scheme: https
-    # <--
   websecure:
     address: :443
 
-# -- Configure your CertificateResolver here...
 certificatesResolvers:
   cloudflare:
     acme:
-      email: deinemail@domain.de  # <-- Change this to your email
+      email: deinemail@domain.de 
       storage: /var/traefik/certs/cloudflare-acme.json
       caServer: "https://acme-v02.api.letsencrypt.org/directory"
       dnsChallenge:
-        provider: cloudflare # <-- (Optional) Change this to your DNS provider
+        provider: cloudflare 
         resolvers:
           - "1.1.1.1:53"
           - "8.8.8.8:53"
 
-# --> (Optional) Disable TLS Cert verification check
-# serversTransport:
-#   insecureSkipVerify: true
-# <--
-
 providers:
   docker:
-    exposedByDefault: false  # <-- (Optional) Change this to true if you want to expose all services
+    exposedByDefault: false 
   file:
     directory: /etc/traefik
     watch: true
@@ -170,6 +144,10 @@ nano .env
 ```env title=".env"
 CF_DNS_API_TOKEN = 'cloudflare api token'
 ```
+
+Für das API-Token benötigt ihr einen kostenlosen Cloudflare-Account. Zudem müsst ihr entweder die Nameserver von Cloudflare verwenden, die komplette Domain von Cloudflare verwalten lassen oder die Domain direkt bei Cloudflare registrieren.
+
+Das API-Token benötigt die Berechtigung `Zone > DNS > Edit`.
 
 ## 8. Traefik starten
 
