@@ -2,7 +2,7 @@
 name: 'tobias'
 pronouns: 'he/him'
 avatar: 'https://gravatar.com/avatar/a81c02679378001c3bba3fb7c932d49f?size=256'
-bio: 'd(-_-)b'
+bio: 'linux, opensource, punk q[-_-]p'
 website: 'https://tobias.steltner.cloud'
 github: 'https://github.com/2TAP2B'
 mail: 'tobias@steltner.cc'

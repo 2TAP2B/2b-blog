@@ -58,6 +58,7 @@ const projects = defineCollection({
       }),
       link: z.string().url(),
     }),
+    
 })
 
 export const collections = { blog, authors, projects }

@@ -17,9 +17,9 @@ export const SITE: Site = {
   DESCRIPTION:
     'personal blog about linux and related stuff',
   EMAIL: 'tobias@steltner.cc',
-  NUM_POSTS_ON_HOMEPAGE: 2,
-  POSTS_PER_PAGE: 3,
-  SITEURL: 'https://astro-erudite.vercel.app',
+  NUM_POSTS_ON_HOMEPAGE: 5,
+  POSTS_PER_PAGE: 7,
+  SITEURL: 'https://tobias.steltner.cloud',
 }
 
 export const NAV_LINKS: Link[] = [
