@@ -137,7 +137,7 @@ providers:
 ## 7. `.env` anlegen 
 
 ```shell
-nano .env
+nano /opt/containers/traefik/.env
 ```
 
 ```env title=".env"
@@ -152,7 +152,7 @@ Das API-Token benötigt die Berechtigung `Zone > DNS > Edit`.
 
 Startet Traefik mit dem Befehl:
 
-```bash
+```bash title="im traefik Verzeichnis /opt/containers/traefik"
 docker-compose up -d
 ```
 
@@ -160,4 +160,55 @@ Nach wenigen Sekunden sollte Traefik laufen. Ihr könnt das Dashboard über `htt
 
 ---
 
+## 9. Setup testen
 
+Wir erstellen einen kleinen Container um das ganze Setup zu testen.
+
+```shell
+mkdir /opt/containers/whoami && nano /opt/containers/whoami/compose.yaml
+```
+
+Hier kopiert ihr folgendes rein:
+
+```yaml
+---
+services:
+  whoami:
+    image: traefik/whoami
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.entrypoints=websecure"
+      - "traefik.http.routers.whoami.rule=Host(`whoami.deinedomain.de`)"
+      - "traefik.http.routers.whoami.tls=true"
+      - "traefik.http.routers.whoami.tls.certresolver=cloudflare"
+      - "traefik.http.routers.whoami.service=whoami"
+      - "traefik.http.services.whoami.loadbalancer.server.port=80"
+      - "traefik.docker.network=frontend"
+    networks:
+      - frontend
+networks:
+  frontend:
+    external: true
+```
+Startet den Container mit:
+
+```shell
+docker compose up
+```
+
+Wartet 1–2 Minuten und öffnet dann eure Domain whoami.domain.de. Diese sollte nun mit einem SSL-Zertifikat ausgestattet sein und euch den folgenden Output anzeigen:
+
+```shell
+Hostname: 7a60cd54469f
+IP: 127.0.0.1
+IP: ::1
+IP: 172.18.0.4
+RemoteAddr: 172.18.0.3:57224
+GET / HTTP/1.1
+Host: whoami.test.bla.de
+```
+Jetzt könnt ihr den Container mit `CTRL+C` beenden und den Ordner löschen
+
+```shell
+rm -rf /opt/containers/whoami
+```
