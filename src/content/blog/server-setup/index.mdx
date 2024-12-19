@@ -47,7 +47,9 @@ Der Zugriff auf einen entfernten Server erfolgt über SSH (Secure Shell). Welche
 kannst du dich auf deinem Server anmelden.
 
 Ein Vorteil bei Hetzner ist, dass im Webinterface bereits während der Serverinstallation SSH-Schlüssel hinterlegt werden, sodass du dich bequem und sicher ohne Passwort anmelden kannst.
+Das solltest du auf jeden Fall machen. SSH-Keys sind fundamental für die Sicherheit deines Servers und stellen das Minimum dar, das du definitiv einrichten solltest.
 
+Man kann auch den Root-Zugriff per SSH verbieten, den Port ändern oder Fail2ban einrichten. Dazu schreibe ich bestimmt später noch etwas.
 
 ---
 
@@ -101,13 +103,30 @@ This message shows that your installation appears to be working correctly.
 
 ---
 
+## 5. DNS Setup
 
-## 5. Nützliche Tools
+Unser Ziel ist es, mittels Docker Compose mit wenig Aufwand Webservices oder Apps bereitzustellen, z. B. unter cloud.2tap2.be oder immich.2tap2.be. Damit die Anfragen korrekt vom Server beantwortet werden und die Domains richtig auflösen, benötigen wir einen Reverse Proxy. Hierfür nutzen wir Traefik, den wir später installieren werden.
+
+Jetzt ist es zunächst wichtig, die DNS-Einträge richtig zu setzen.
+Du könntest z. B. bei Cloudflare unter den DNS-Einstellungen folgende Einträge erstellen:
+
+* Einen Eintrag für cloud, der auf die IP deines Servers zeigt.
+* Einen zweiten Eintrag für immich, der ebenfalls auf deine Server-IP verweist.
+
+Damit kann Traefik die Anfragen verarbeiten und korrekt weiterleiten.
+
+Falls du keine Lust hast, für jede Subdomain einen neuen DNS-Eintrag zu erstellen, kannst du auch einen Wildcard-Eintrag setzen, z. B. *.homelab, der auf deine Server-IP zeigt. Dadurch kannst du beliebige Subdomains verwenden, wie etwa yopass.homelab.2tap2.be.
+
+---
+
+## 6. Nützliche Tools
 
 Eine gute Entwicklungsumgebung erleichtert die Arbeit enorm. 
 Ich empfehle dir eine IDE wie Visual Studio Code oder dessen Open-Source-Variante VSCodium.
 
-Beide sind einfach zu bedienen und unterstützen zahlreiche nützliche Plugins, die dir die Arbeit erleichtern.
+[VSCodium](https://vscodium.com/)
 
-Mit diesen Voraussetzungen bist du bereit, die Anleitung Schritt für Schritt nachzuarbeiten. 
+[VSCode](https://code.visualstudio.com/)
+
+Beide sind einfach zu bedienen und unterstützen zahlreiche nützliche Plugins, die dir die Arbeit erleichtern. Es lohnt sich definitiv, mal 30 Minuten auf YouTube zu investieren, um sich das grundlegende Konzept anzuschauen.
 

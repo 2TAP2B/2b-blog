@@ -30,10 +30,8 @@ Bevor wir starten, stellt sicher, dass folgende Voraussetzungen erfüllt sind:
 Beginnen wir damit, ein Projektverzeichnis zu erstellen, in dem alle Konfigurationsdateien liegen:
 
 ```bash
-mkdir traefik-docker-setup
-cd traefik-docker-setup
-mkdir config
-touch config/traefik.yaml
+mkdir /opt/containers/traefik/config
+cd /opt/containers/traefik
 ```
 
 ---
@@ -97,11 +95,11 @@ nano config/traefik.yaml
 global:
   checkNewVersion: false
   sendAnonymousUsage: false
-
-  dashboard: true
-  insecure: true
-
-
+# --> (Optional) aktiviere API und Dashboard hier, don't do in production
+#api:
+#  dashboard: true
+#  insecure: true
+# --> (Optional) Zum Testen kannst du die Kommentierung entfernen.
 entryPoints:
   web:
     address: :80
@@ -116,7 +114,7 @@ entryPoints:
 certificatesResolvers:
   cloudflare:
     acme:
-      email: deinemail@domain.de 
+      email: deine@mail.com  # <-- deine cloudflare mail adresse
       storage: /var/traefik/certs/cloudflare-acme.json
       caServer: "https://acme-v02.api.letsencrypt.org/directory"
       dnsChallenge:
@@ -124,6 +122,7 @@ certificatesResolvers:
         resolvers:
           - "1.1.1.1:53"
           - "8.8.8.8:53"
+
 
 providers:
   docker:

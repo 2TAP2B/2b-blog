@@ -17,8 +17,8 @@ Für all jene, die Passwörter, Zugangsdaten und andere sensible Informationen s
 
 ## 1. Grundvoraussetzung
 
-- Docker & Docker Compose v2 ([Debian](https://goneuland.de/docker-docker-compose-v2-auf-debian-bullseye-11-installieren/) / [Ubuntu](https://goneuland.de/docker-docker-compose-v2-auf-ubuntu-22-04-lts-installieren/))
-- [Traefik V3 Installation, Konfiguration und CrowdSec-Security](https://goneuland.de/traefik-v3-installation-konfiguration-und-crowdsec-security/)
+- Docker & Docker Compose v2 ( [Hier](/blog/server-setup) )
+- [Traefik Setup](/blog/traefik)
 
 ---
 
@@ -55,31 +55,29 @@ services:
     restart: always
     command: "--memcached=memcached:11211 --port 80"
     environment:
-      - VIRTUAL_HOST=yopass.euredomain.de
+      - VIRTUAL_HOST=yopass.deine.domain.de
       - MAX_LENGTH=8000000
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.yopass.entrypoints=websecure"
-      - "traefik.http.routers.yopass.rule=Host(`yopass.euredomain.de`)"
-      - "traefik.http.routers.yopass.middlewares=default@file"
+      - "traefik.http.routers.yopass.rule=Host(`yopass.deine.domain.de`)"
       - "traefik.http.routers.yopass.tls=true"
-      - "traefik.http.routers.yopass.tls.certresolver=http_resolver"
+      - "traefik.http.routers.yopass.tls.certresolver=cloudflare"
       - "traefik.http.routers.yopass.service=yopass"
       - "traefik.http.services.yopass.loadbalancer.server.port=80"
-      - "traefik.docker.network=proxy"
+      - "traefik.docker.network=frontend"
     networks:
-      - default
-      - proxy
+      - frontend
 networks:
-  proxy:
+  frontend:
     external: true
 ```
 
 
 **Notwendige Anpassungen:**
 
-1. Ihr müsst noch den Hostnamen anpassen: (yopass.euredomain.de)
-2. Ihr müsst den Virtual_Host anpassen: VIRTUAL_HOST=yopass.euredomain.de
+1. Ihr müsst noch den Hostnamen anpassen: (yopass.deine.domain.de)
+2. Ihr müsst den Virtual_Host anpassen: VIRTUAL_HOST=yopass.deine.domain.de
 
 ---
 
@@ -92,9 +90,9 @@ docker compose -f /opt/containers/yopass/compose.yml up -d
 ```
 
 
-Nun geht ihr auf “yopass.euredomain.de”. Dort solltet ihr jetzt folgendes sehen.
+Nun geht ihr auf “yopass.deine.domain.de”. Dort solltet ihr jetzt folgendes sehen.
 
-![headscale2](/static/images/yopass/yopass.png)
+![yopass](./yopass2.png)
 
 Yopass unterstützt den Upload kleiner Dateien, wie SSH-Schlüssel und Zertifikate, die sicher geteilt werden müssen. Der maximale Upload ist aktuell auf 1 MB beschränkt, eine Grenze, die sich durch die Variable max-length anpassen lässt. Diese Begrenzung stellt sicher, dass die Plattform für kleinere, sensible Dateien optimiert bleibt und eine schnelle, sichere Übertragung gewährleistet.
 
