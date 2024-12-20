@@ -376,12 +376,10 @@ networks:
 docker compose -f /opt/containers/traefik/docker-compose.yaml up -d --force-recreate
 ```
 
-Nach diesen Änderungen sollte das Traefik-Dashboard nun durch Authelia gesichert sein.
+Nach diesen Änderungen sollte das Traefik-Dashboard nun durch Authelia geschützt sein.
 
-So lassen sich Dienste mit einer zusätzlichen Schicht absichern.
+Mit Authelia lassen sich Dienste ganz einfach um eine zusätzliche Sicherheitsschicht erweitern. Dabei ist es auch möglich, nur bestimmte Bereiche abzusichern – beispielsweise den Pfad /admin, während der Rest des Dienstes weiterhin ohne Authentifizierung erreichbar bleibt. Kein Problem!
 
-Man kann auch nur bestimmte bereiche absichern. zb wenn man nur den pfad /admin mit authelia absichern möchte, kein problem.
+Zu diesem Thema werde ich sicher bald einen weiteren Beitrag schreiben.
 
-Werde ich bestimmt bald was zu schreiben.
-
-Bei fragen erreicht ihr mich über matrix oder mail oder mastodon.
+Wenn ihr Fragen habt, könnt ihr mich gerne über Matrix, per E-Mail oder auf Mastodon erreichen. 😊
