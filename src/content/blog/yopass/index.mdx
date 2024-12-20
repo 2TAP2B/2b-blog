@@ -15,7 +15,7 @@ Für all jene, die Passwörter, Zugangsdaten und andere sensible Informationen s
 
 ## 1. Grundvoraussetzung
 
-- Docker & Docker Compose v2 ( [Hier](/blog/server-setup) )
+- Docker & Docker Compose v2 ( [Hier](/blog/server-setup#3-docker-und-docker-compose) )
 - [Traefik Setup](/blog/traefik)
 
 ---
@@ -33,7 +33,7 @@ mkdir -p /opt/containers/yopass
 
 Nun erstellen wir unsere Docker Compose Datei.
 ```shell
-nano /opt/containers/yopass/compose.yml
+nano /opt/containers/yopass/compose.yaml
 ```
 
 **Fügt folgendes ein:**
@@ -84,7 +84,7 @@ networks:
 Jetzt nur noch den Container starten. Gebt dazu folgendes ein:
 
 ```shell
-docker compose -f /opt/containers/yopass/compose.yml up -d
+docker compose -f /opt/containers/yopass/compose.yaml up -d
 ```
 
 

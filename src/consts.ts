@@ -34,4 +34,5 @@ export const SOCIAL_LINKS: Link[] = [
   { href: 'https://matrix.to/#/@tobias:xanten.cc', label: 'Matrix' },
   { href: 'tobias@steltner.cc', label: 'Email' },
   { href: '/rss.xml', label: 'RSS' },
+  { href: 'https://todon.nl/@2b', label: 'Mastodon' },
 ]

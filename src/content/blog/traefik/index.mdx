@@ -19,9 +19,8 @@ Ein Reverse Proxy fungiert als Vermittler zwischen Clients (z. B. Webbrowsern) u
 
 Bevor wir starten, stellt sicher, dass folgende Voraussetzungen erfüllt sind:
 
-1. **Docker** ist installiert ([Docker installieren](https://docs.docker.com/get-docker/)).
-2. **Docker Compose** ist installiert ([Docker Compose installieren](https://docs.docker.com/compose/install/)).
-3. Grundkenntnisse in Docker und Linux-Terminals sind vorhanden.
+- Docker & Docker Compose v2 ( [Hier](/blog/server-setup#3-docker-und-docker-compose) )
+- [Basic Server Setup](/blog/server-setup)
 
 ---
 
@@ -36,15 +35,15 @@ cd /opt/containers/traefik
 
 ---
 
-## 4. `docker-compose.yml` erstellen
+## 4. `docker-compose.yaml` erstellen
 
-Erstellt eine neue Datei namens `docker-compose.yml` mit folgendem Inhalt:
+Erstellt eine neue Datei namens `docker-compose.yaml` mit folgendem Inhalt:
 
 ```shell
-nano docker-compose.yml
+nano docker-compose.yaml
 ```
 
-```yaml title="docker-compose.yml"
+```yaml title="docker-compose.yaml"
 ---
 services:
   traefik:
