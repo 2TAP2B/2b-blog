@@ -30,9 +30,10 @@ export const NAV_LINKS: Link[] = [
 ]
 
 export const SOCIAL_LINKS: Link[] = [
+  { href: 'tobias@steltner.cc', label: 'Email' },
   { href: 'https://github.com/2TAP2B', label: 'GitHub' },
   { href: 'https://matrix.to/#/@tobias:xanten.cc', label: 'Matrix' },
-  { href: 'tobias@steltner.cc', label: 'Email' },
-  { href: '/rss.xml', label: 'RSS' },
   { href: 'https://todon.nl/@2b', label: 'Mastodon' },
+  { href: '/rss.xml', label: 'RSS' },
+
 ]

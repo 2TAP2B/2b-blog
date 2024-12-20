@@ -15,12 +15,15 @@ const {
   name,
   avatar,
   bio,
+  bio2,
   pronouns,
   github,
   twitter,
   linkedin,
   website,
   mail,
+  mastodon,
+  matrix,
 } = author.data
 
 const socialLinks: SocialLink[] = [
@@ -29,6 +32,8 @@ const socialLinks: SocialLink[] = [
   twitter && { href: twitter, label: 'Twitter' },
   linkedin && { href: linkedin, label: 'LinkedIn' },
   mail && { href: mail, label: 'Email' },
+  mastodon && { href: mastodon, label: 'Mastodon' },
+  matrix && { href: matrix, label: 'Mastodon' },
 ].filter(Boolean) as SocialLink[]
 ---
 
