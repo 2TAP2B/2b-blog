@@ -1,7 +1,6 @@
 ---
 import BlogCard from '@/components/BlogCard.astro'
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
-import Callout from '@/components/Callout.astro'
 import Container from '@/components/Container.astro'
 import PaginationComponent from '@/components/ui/pagination'
 import { SITE } from '@/consts'
@@ -43,7 +42,6 @@ const years = Object.keys(postsByYear).sort((a, b) => parseInt(b) - parseInt(a))
         { label: `Page ${page.currentPage}`, icon: 'lucide:folder-open' },
       ]}
     />
-    <Content components={{ Aside: Aside }} />
     <div class="flex min-h-[calc(100vh-18rem)] flex-col gap-y-8">
       {
         years.map((year) => (
