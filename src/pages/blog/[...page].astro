@@ -43,7 +43,7 @@ const years = Object.keys(postsByYear).sort((a, b) => parseInt(b) - parseInt(a))
         { label: `Page ${page.currentPage}`, icon: 'lucide:folder-open' },
       ]}
     />
-
+    <Content components={{ Aside: Aside }} />
     <div class="flex min-h-[calc(100vh-18rem)] flex-col gap-y-8">
       {
         years.map((year) => (

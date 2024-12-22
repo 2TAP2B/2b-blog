@@ -11,7 +11,7 @@ const { icon, type = "default" } = Astro.props;
 ---
 
 <div
-  class={cn("mt-6 flex items-start rounded-md border py-3 px-4", {
+  class={cn("mt-6 flex items-start rounded-md border py-1 px-4", {
     "text-blue-800 border-blue-200 bg-blue-100 dark:text-blue-200 dark:border-blue-200/40 dark:bg-blue-900/40":
       type === "info",
     "text-red-900 border-red-200 bg-red-100 dark:text-red-200 dark:border-red-200/30 dark:bg-red-900/40":
@@ -20,7 +20,7 @@ const { icon, type = "default" } = Astro.props;
       type === "warning",
   })}
 >
-  {icon && <span class="mr-3 text-xl font-icon-callout">{icon}</span>}
+  {icon && <span class="py-7 mr-5 text-xl font-icon-callout">{icon}</span>}
   <div class="callout">
     <slot />
   </div>
