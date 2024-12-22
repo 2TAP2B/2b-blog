@@ -5,9 +5,24 @@ date: 2024-12-20
 tags: ['reverse-proxy', 'opensource', 'ssl', 'traefik', 'whitelist']
 image: './traefik.png'
 authors: ['tobias']
-draft: true
+draft: false
 ---
 
-# Intro
+# 1. Intro
 
-In gewissen
+In gewissen Situationen kann es nützlich sein, eine Webseite nur von bestimmten IPs zugänglich zu machen. Ein Beispiel wäre ein Passwortmanager wie z.B. Vaultwarden.
+
+Dieser wäre dann nur über eine bestimmte IP abrufbar, zum Beispiel die Adresse unseres WireGuard-Servers oder Heimnetzwerk-Servers. Auf diese Weise könnte man auch außerhalb des Heimnetzwerks via VPN auf Vaultwarden zugreifen.
+
+Es gibt viele verschiedene Möglichkeiten, so etwas zu realisieren. Mit Traefik wäre diese Umsetzung jedoch wirklich sehr einfach und erfordert nur einige Zeilen Code.
+
+---
+
+## 2. Grundvoraussetzung
+
+- [Docker & Docker Compose v2](/blog/server-setup#3-docker-und-docker-compose)
+- [Traefik Setup](/blog/traefik)
+
+---
+
+## 3. Traefik anpassen

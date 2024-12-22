@@ -27,13 +27,7 @@ export default defineConfig({
       applyBaseStyles: false,
     }),
     sitemap(),
-    mdx({
-      syntaxHighlight: "shiki",
-      shikiConfig: {
-        theme: "github-dark-dimmed",
-      },
-      gfm: true,
-    }),
+    mdx(),
     react(),
     icon(),
   ],
