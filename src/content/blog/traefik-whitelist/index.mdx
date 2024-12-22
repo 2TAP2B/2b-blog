@@ -7,7 +7,6 @@ image: './traefik.png'
 authors: ['tobias']
 draft: false
 ---
-
 ## 1. Intro
 
 In gewissen Situationen kann es nützlich sein, eine Webseite nur von bestimmten IPs zugänglich zu machen. Ein Beispiel wäre ein Passwortmanager wie z.B. Vaultwarden.
@@ -135,8 +134,18 @@ crontab -e
 
 ## 4. Traefik neustarten
 
+import Callout from '@/components/Callout.astro'
+  
+
+<Callout icon="💡" type="info">
+
+Denkt daran, Traefik nach den Änderungen neu zu starten, damit diese übernommen werden.
+</Callout>
+
 ```shell
 docker compose -f /opt/containers/traefik/docker-compose.yaml up -d --force-recreate
 ```
 
 --- 
+
+
