@@ -1,7 +1,7 @@
 ---
 title: 'Traefik IP Whitelist erstellen'
 description: 'Den Zugriff auf bestimmte Seiten nur per IP-Whitelist zuzulassen, kann manchmal hilfreich sein.'
-date: 2024-12-20
+date: 2024-12-22
 tags: ['reverse-proxy', 'opensource', 'ssl', 'traefik', 'whitelist']
 image: './traefik.png'
 authors: ['tobias']
@@ -26,7 +26,7 @@ Es gibt viele verschiedene Möglichkeiten, so etwas zu realisieren. Mit Traefik 
 
 ## 3. Traefik anpassen
 
-Zunächst erstellen wir eine neue Datei namens middleware.yaml.
+Zunächst erstellen wir eine neue Datei namens `middlewares-ip-whitelist.yaml`.
 
 ```shell
 nano /opt/containers/traefik/config/conf.d/middlewares-ip-whitelist.yaml

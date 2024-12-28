@@ -6,62 +6,132 @@ tags: ['linux', 'server']
 image: './server.png'
 authors: ['tobias']
 ---
+import Callout from '@/components/Callout.astro'
 
-# Intro
+# 1. Intro
 
-Grundsätzlich möchte ich euch hier zeigen, dass mit relativ geringem Aufwand sehr praktische Tools auf einem Linux-Server laufen können. Zu Beginn kann es zwar ziemlich verwirrend sein, aber die Lernkurve ist durchaus machbar. Nach einigen Stunden wirst du bereits die ersten Erfolge feiern können. Bei Problemen gibt es eine große Community und intelligente Chatbots, die nur darauf warten, deine Fragen zu beantworten.
+Wäre es nicht ziemlich cool, praktische Dienste wie Google Photos, Dropbox oder einen VPN selbst zu hosten?
+Möchtest du die volle Kontrolle über deine Daten behalten?
 
-So können wirklich coole Projekte entstehen, und einige dieser Projekte, die ich bereits realisiert habe, möchte ich mit euch teilen.
+Ich habe vor einigen Jahren den großen Cloud-Anbietern den Rücken gekehrt und kümmere mich seitdem selbst um die Bereitstellung solcher Dienste. Es geht mir dabei vor allem um Datenhoheit – meine Daten sind meine Daten, und ich möchte keine Dienste mit meinen Informationen „bezahlen“.
 
-Beispielsweise können wir unsere eigene Google-Photos-Alternative hosten, einen Password Manager einrichten oder eine Dropbox-Alternative aufsetzen.
-Wir starten jetzt zunächst mit dem Basis-Setup für den Server und installieren dann die ersten Docker-Container.
+Google und Co. bieten zwar kostenlose Services an, aber diese sind nicht wirklich umsonst – du zahlst mit deinen (Meta-)Daten. Auf diese Art der „Bezahlung“ möchte ich verzichten. Stattdessen nehme ich die Bereitstellung der notwendigen Infrastruktur selbst in die Hand.
 
-Also, lass uns anfangen!
-
----
-
-## 1. Ein Server
-
-Du brauchst einen Server mit Ubuntu 22.04 oder 24.04 als Betriebssystem. 
-Das kann ein Server in deinem heimischen Netzwerk sein oder ein gemieteter Server in der Cloud. 
-Wenn du noch auf der Suche nach einer guten Hosting-Option bist: 
-
-[Hetzner](https://www.hetzner.com/) bietet solide Leistungen zu fairen Preisen. 
-
-Das ist keine Werbung, nur meine eigene Erfahrung und ich hoste dort auch.
+Es gibt viele Open-Source-Projekte, die kommerzielle Dienste nicht nur 1:1 ersetzen, sondern oft sogar übertreffen können. In diesem Artikel möchte ich euch eine Grundlage bieten, um mit Selfhosting zu starten.
 
 ---
 
-### 1.1 Firewall
+# 2. Die Hardware
 
-Wir bleiben bei Hetzner, wo ich meine Firewall ganz einfach im Webinterface verwalten kann. Dort öffnen wir die Ports 22 für SSH, 80 für HTTP und 443 für HTTPS.
+Um mit Selfhosting zu beginnen, braucht man nicht viel. Der Einstieg erfordert zunächst einen PC oder Laptop. Notfalls könnte man sogar ein Tablet oder Smartphone nutzen, aber diese Optionen klammere ich hier aus.
 
----
+Dieser PC oder Laptop wird später zur Steuerzentrale für deinen Server, denn der Server selbst wird headless betrieben.
 
-### 1.2 SSH
+<Callout icon="💡" type="info">
+<strong>Was bedeutet headless?<br></br></strong>
+Ein headless Server läuft ohne angeschlossenen Bildschirm, Maus oder Tastatur. Er wird in der Regel per Fernzugriff über ein Netzwerk gesteuert.
+</Callout>
 
-Der Zugriff auf einen entfernten Server erfolgt über SSH (Secure Shell). Welches Betriebssystem du auf deinem PC verwendest, spielt dabei keine große Rolle. Unter Windows kannst du die PowerShell nutzen, und unter Linux öffnest du einfach die Konsole. Mit dem Befehl:
+Ob dein Betriebssystem Linux, macOS oder Windows ist, spielt am Anfang keine große Rolle. Persönlich empfehle ich dir aber, Linux als Hauptbetriebssystem zu nutzen – es ist zuverlässig, flexibel und perfekt für Selfhosting.
+Server zu Hause oder in der Cloud?
 
-`ssh root@ip-adresse-server` (z. B. `ssh root@115.12.13.14`)
+Jetzt stellt sich die Frage: Möchtest du deinen Server zu Hause betreiben?
 
-kannst du dich auf deinem Server anmelden.
+    Zu Hause:
+    Hier bietet sich ein Raspberry Pi oder ein kleiner Mini-PC an. Besonders Mini-PCs sind eine günstige Lösung. Viele Unternehmen verkaufen Leasing-Rückläufer als refurbished Geräte, die sich hervorragend für den Einstieg eignen.
 
-Ein Vorteil bei Hetzner ist, dass im Webinterface bereits während der Serverinstallation SSH-Schlüssel hinterlegt werden, sodass du dich bequem und sicher ohne Passwort anmelden kannst.
-Das solltest du auf jeden Fall machen. SSH-Keys sind fundamental für die Sicherheit deines Servers und stellen das Minimum dar, das du definitiv einrichten solltest.
-
-Man kann auch den Root-Zugriff per SSH verbieten, den Port ändern oder Fail2ban einrichten. Dazu schreibe ich bestimmt später noch etwas.
-
----
-
-## 2. Grundlegende Linux-Kenntnisse
-
-Ein paar grundlegende Linux-Skills sind hilfreich, um den Server einzurichten und Befehle auszuführen. 
-Wenn du dich schon ein bisschen mit der Kommandozeile auskennst, bist du bestens gerüstet.
-Aber es hat jeder mal klein angefangen, wenn du noch nie ein Terminal benutzt hast, ist doch genau jetzt der richtige Moment dafür!
+    In der Cloud:
+    Falls du keinen Platz zu Hause hast oder dich nicht selbst um die Hardware kümmern möchtest, kannst du für etwa 5 € im Monat einen kleinen Server in der Cloud mieten.
+    Ich persönlich habe gute Erfahrungen mit Hetzner und Netcup gemacht – das ist keine Werbung, sondern nur meine Empfehlung basierend auf eigener Nutzung.
 
 ---
 
-## 3. Docker und Docker Compose
+# 3. Software
+
+Wenn die Hardwarefrage geklärt ist, geht es weiter mit der Software.
+
+Hier mache ich es kurz: 
+
+Ich nutze seit Jahren den Ubuntu Server und bin damit äußerst zufrieden. Daher empfehle ich euch, damit ebenfalls zu starten.
+
+[Ubuntu Server iso](https://ubuntu.com/download/server)
+
+---
+
+# 4. Server Setup
+
+Für den Anfang erkläre ich die Cloud-Variante mit Hetzner, da sie einfacher und mit weniger Aufwand verbunden ist. Ein separater Artikel über das Einrichten eines Servers zu Hause im Homelab folgt später.
+
+Die Cloud-Option eignet sich ideal zum Testen: Du kannst einen Server aufsetzen, verschiedene Dienste ausprobieren und ihn bei Bedarf einfach wieder kündigen. So besteht kein finanzielles Risiko – der Einstieg kostet lediglich etwa 5 € pro Monat.
+
+---
+
+## 4.1 Server aufsetzen
+
+    Account erstellen:
+
+    Registriere dich bei Hetzner und logge dich unter [Hetzner](https://www.hetzner.com/cloud/) ein.
+
+    **Cloud-Server anlegen:**
+    * Wähle eine Location (Rechenzentrum).
+    * Entscheide dich für ein Betriebssystem (ich empfehle hier Ubuntu).
+    * Wähle den kleinsten Server:
+    * 2 vCPUs
+    * 4 GB RAM
+
+    ![server-setup-1](./srv1.png)
+    
+    ![server-setup-1](./srv2.png)
+
+    Das reicht vollkommen aus, um loszulegen.
+
+    ---
+
+## 4.2 SSH-Key erstellen:
+
+Um sicher auf deinen Server zugreifen zu können, benötigst du einen SSH-Schlüssel. Falls du noch keinen hast, kannst du ihn wie folgt erstellen:
+
+
+**SSH-Key erstellen (Windows und Linux)**
+
+Öffne ein Terminal (bei Windows: PowerShell oder das Windows-Subsystem für Linux, WSL).
+Führe den folgenden Befehl aus
+```shell
+ssh-keygen -t ed2551
+```
+
+Folge den Anweisungen, um den Schlüssel zu generieren. 
+
+Der öffentliche Schlüssel wird in der Datei `~/.ssh/id_ed25519.pub` (Linux/Mac) oder im entsprechenden Verzeichnis (Windows) gespeichert.
+
+Öffne die Datei id_ed25519.pub in einem Texteditor und kopiere den Inhalt. Füge den Schlüssel dann im Hetzner-Dashboard beim Anlegen des Servers ein.
+
+![server-setup-1](./srv4.png)
+
+Bestätige die Einrichtung, und dein Server wird erstellt. Du kannst ihn jederzeit kündigen, falls du ihn nicht mehr benötigst.
+
+---
+
+## 4.3 Firewall-Regeln erstellen
+
+Im Hetzner-Dashboard angekommen:
+
+Wähle deinen Server aus.
+
+Richte eine Firewall ein:
+Öffne die Ports 22, 80 und 443 (jeweils für TCP).
+
+![server-setup-1](./srv5.png)
+
+Erklärung der Ports:
+* Port 22: Für den SSH-Zugriff auf den Server.
+* Port 80 und 443: Für HTTP und HTTPS, damit dein Server später Webseiten ausliefern kann.
+
+Nach diesen Schritten ist dein Server sicher und bereit für die nächsten Konfigurationen.
+
+---
+
+# 5. Docker und Docker Compose
 
 Du brauchst eine funktionierende Installation von Docker und Docker Compose. 
 Keine Sorge, die Installation ist einfach. 
@@ -79,7 +149,7 @@ Falls du einen Fehler erhälst, könnte es sein, das curl fehlt, dann instaliere
 apt install curl
 ```
 
-### 3.1 Docker testen
+## 5.1 Docker testen
 
 Lass uns mal testen ob Docker ordentlich installiert wurde
 
@@ -103,7 +173,7 @@ This message shows that your installation appears to be working correctly.
 
 ---
 
-## 5. DNS Setup
+# 6. DNS Setup
 
 Unser Ziel ist es, mittels Docker Compose mit wenig Aufwand Webservices oder Apps bereitzustellen, z. B. unter cloud.2tap2.be oder immich.2tap2.be. Damit die Anfragen korrekt vom Server beantwortet werden und die Domains richtig auflösen, benötigen wir einen Reverse Proxy. Hierfür nutzen wir Traefik, den wir später installieren werden.
 
@@ -119,7 +189,7 @@ Falls du keine Lust hast, für jede Subdomain einen neuen DNS-Eintrag zu erstell
 
 ---
 
-## 6. Nützliche Tools
+## 7. Nützliche Tools
 
 Eine gute Entwicklungsumgebung erleichtert die Arbeit enorm. 
 Ich empfehle dir eine IDE wie Visual Studio Code oder dessen Open-Source-Variante VSCodium.
