@@ -11,18 +11,20 @@ import Callout from '@/components/Callout.astro'
 
 # 1. Intro
 
-Ein Thema hatte ich erst lange auf meiner To-Do-Liste, jetzt bin ich mal dazu gekommen mich darum zu kümmern. 
+Ein Thema hatte ich schon lange auf meiner To-Do-Liste, jetzt bin ich mal dazu gekommen mich darum zu kümmern. 
 Es geht um LLM also Large Language Models. 
 Hier hat sich das Warten definitiv gelohnt, mittlerweile kann ich mir eine ChatGPT ähnliche Oberfläche aufsetzen und viele verschiedene Open-Source-NLP-Modelle dort schnell und einfach einbinden.
 
 Damit es schon bequem zu installieren ist, nutze ich hier Docker.
-Wenn du noch kein Docker installiert haben solltest, kannst du hier nachlesen wie das geht.
+Wenn du noch kein Docker installiert haben solltest, kannst du [hier](/blog/server-setup#5-docker-und-docker-compose) nachlesen wie das geht.
 
 Diese Anwendung lasse ich lokal auf meinem Desktop-PC laufen, weil dieser eine GPU hat und das LLM so deutlich schneller läuft.
 
 Es würde aber auch nur auf der CPU laufen können, es kommt immer auf die Modelle an. Es gibt mittlerweile jedoch ziemlich gut kleine Modelle, die ohne GPU relativ schnell laufen.
 
 Ungeduldigen Menschen ist eine GPU hier definitiv zu empfehlen.
+
+Grundsätzlich lässt sich dieses Setup auch online betreiben und per Traefik ins Internet freizügentlich machen, wenn ihr Interesse daran habt, meldet euch gerne.
 
 ---
 
@@ -114,7 +116,7 @@ cd /opt/containers/openwebui-ollama && docker compose up -d"
 
 Das wird je nach Internetverbindung etwas dauern, da die beiden Docker-Container zusammen 8 GB groß sind.
 
-Wenn alles geladen und entpackt ist, können wir mal [localhost:3000](http://localhost:3000)  ansurfen.
+Wenn alles geladen und entpackt ist, können wir mal [localhost:3000](http://localhost:3000) ansurfen.
 
 Dort werdet ihr von einer Login-Maske begrüßt und könnt euch initial einen Admin-Account anlegen.
 Danach loggt ihr euch ein; jetzt solltet ihr auf der Open-Web-UI sein.
