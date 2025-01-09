@@ -21,7 +21,7 @@ import icon from 'astro-icon'
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://tobias.steltner.cloud',
+  site: 'https://2tap2.be',
   integrations: [
     tailwind({
       applyBaseStyles: false,
