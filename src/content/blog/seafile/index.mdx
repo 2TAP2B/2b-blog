@@ -1,5 +1,5 @@
 ---
-title: 'Seafile mit Docker installieren'
+title: 'Seafile v12 mit Docker installieren'
 description: 'Hier zeige ich dir, wie du Seafile mit Docker installieren kannst. Eine super alternative zum Dropbox oder Google Drive.'
 date: 2025-01-08
 tags: ['docker', 'seafile', 'Linux', 'cloud-storage', 'sync', 'open-source', 'filesync']
@@ -9,12 +9,18 @@ authors: ['tobias']
 
 ## 1. Intro 
 
-In einer Welt, in der Daten immer wichtiger werden, ist es wichtig, dass wir unsere eigenen Daten kontrollieren können.
-Wir müssen uns nicht auf kommerzielle Cloud-Anbieter verlassen, sondern eine Lösung finden, die unsere Privatsphäre und Sicherheit schützt.
-Seafile ist eine beliebte Open-Source-Lösung für Dateisynchronisation und Cloud-Storage, die es ermöglicht, Dateien auf einem eigenen Server zu 
-speichern und auf verschiedenen Geräten abzurufen. 
-Mit dieser Lösung können wir unsere Daten sicher und effizient verwalten, ohne dass wir uns auf die Risiken und Einschränkungen 
-von kommerziellen Cloud-Anbietern begeben müssen. 
+Ich habe mich vor vielen Jahren von den großen Cloud-Speicher-Diensten getrennt. Bei Google oder Dropbox war ich nur im **Free Account** um mir die UI/UX mal zu geben, aber meine Daten habe ich dort nie geparkt.
+
+Dann hatte ich mal einen **pCloud Account** und einen **Proton Drive**, aber richtig Happy war ich damit nicht. Ich habe halt gerne die volle Kontrolle. Früher oder später landet man dann bei **Nextcloud**, auch ich. Aber ich habe mich nur kurz damit rumgeschlagen, weil das "all in one" Konzept mich störte.
+
+Ich wollte einen Dienst, der plattformübergreifend meine Daten synchronisiert ohne andauernd Probleme zu machen.
+
+So bin ich auf **Seafile** gestoßen. Es kann genau das: Daten synchronisieren und das blitzschnell, und es macht einfach nie Probleme. Seit 2018 läuft bei mir ein Seafile.
+
+Erst auf einem Raspberry Pi, mittlerweile in einer **Proxmox-VM** und was soll ich sagen, ich hatte noch nie Probleme.
+
+Hier zeige ich dir, wie du die Version 12 Community Edition mit Docker und Traefik installieren kannst.
+
 
 ### 1.2 Was ist Seafile? 
 Seafile ist eine Open-Source-Lösung für Dateisynchronisation und Cloud-Storage, die es ermöglicht, Dateien auf einem eigenen Server zu speichern und auf verschiedenen Geräten abzurufen. Für mich ist es ein 1:1 Ersatz zu Dropbox oder Google Drive. 

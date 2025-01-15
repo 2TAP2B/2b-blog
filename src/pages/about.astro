@@ -2,28 +2,29 @@
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import Container from '@/components/Container.astro'
 import ProjectCard from '@/components/ProjectCard.astro'
-import { SITE } from '@/consts'
 import Layout from '@/layouts/Layout.astro'
 import { getCollection } from 'astro:content'
 
+// Fetch items from the 'projects' collection
 const projects = await getCollection('projects')
 ---
 
-<Layout title="About" description={SITE.DESCRIPTION}>
+<Layout title="My Setup" description="Explore the hardware and tools I use daily.">
   <Container class="flex flex-col gap-y-6">
-    <Breadcrumbs items={[{ label: 'About', icon: 'lucide:dock' }]} />
+    <Breadcrumbs items={[{ label: 'My Setup', icon: 'lucide:settings' }]} />
 
     <section>
       <div class="min-w-full">
-        <h1 class="mb-4 text-3xl font-bold">Some more about us</h1>
+        <h1 class="mb-4 text-3xl font-bold">My Setup</h1>
         <p class="prose prose-neutral mb-8 dark:prose-invert">
-          {SITE.TITLE} is an opinionated, no-frills static blogging template built
-          with Astro.
+          Here is a detailed look at the tools and hardware I use, from my desktop and laptop setups to the servers I manage.
         </p>
 
-        <h2 class="mb-4 text-2xl font-semibold">Our Projects</h2>
-        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project) => <ProjectCard project={project} />)}
+        <h2 class="mb-4 text-2xl font-semibold">Setup Highlights</h2>
+        <div class="grid gap-6 sm:grid-cols-1 lg:grid-cols-1">
+          {projects.map((project) => (
+            <ProjectCard project={project} />
+          ))}
         </div>
       </div>
     </section>
