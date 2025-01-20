@@ -1,0 +1,40 @@
+---
+import Breadcrumbs from '@/components/Breadcrumbs.astro'
+import Container from '@/components/Container.astro'
+import Layout from '@/layouts/Layout.astro'
+
+---
+
+<Layout title="Contact Me" description="Get in touch with me through various platforms and services.">
+  <Container class="flex flex-col gap-y-6">
+    <Breadcrumbs items={[{ label: 'Contact Me', icon: 'lucide:mail' }]} />
+
+    <section>
+      <div class="min-w-full">
+        <h1 class="mb-4 text-3xl font-bold">Contact Me</h1>
+        <p class="prose prose-neutral mb-8 dark:prose-invert">
+          Feel free to reach out to me through any of the channels listed below. I'm always open to connecting!
+        </p>
+
+        <h2 class="mb-4 text-2xl font-semibold">Get in Touch</h2>
+        <ul class="prose prose-neutral dark:prose-invert list-none space-y-4">
+          <li>
+            <strong>Email:</strong> <a href="mailto:youremail@example.com" class="text-blue-600 dark:text-blue-400 hover:underline">youremail@example.com</a>
+          </li>
+          <li>
+            <strong>Matrix:</strong> <code>@yourusername:matrix.org</code>
+          </li>
+          <li>
+            <strong>Mastodon:</strong> <a href="https://mastodon.social/@yourusername" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline">@yourusername@mastodon.social</a>
+          </li>
+          <li>
+            <strong>GitHub:</strong> <a href="https://github.com/yourusername" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline">github.com/yourusername</a>
+          </li>
+          <li>
+            <strong>Twitter:</strong> <a href="https://twitter.com/yourusername" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline">@yourusername</a>
+          </li>
+        </ul>
+      </div>
+    </section>
+  </Container>
+</Layout>
