@@ -145,6 +145,7 @@ const authors = await parseAuthors(post.data.authors ?? [])
             )
           }
         </div>
+        
       </div>
 
       <PostNavigation prevPost={prevPost} nextPost={nextPost} />
@@ -160,7 +161,23 @@ const authors = await parseAuthors(post.data.authors ?? [])
 
     <PostNavigation prevPost={prevPost} nextPost={nextPost} />
   </section>
-
+  <div class="col-start-2 flex flex-col gap-y-8 text-center max-w-4xl mx-auto mt-12">
+  <script src="https://giscus.app/client.js"
+  data-repo="2TAP2B/astro-erudite"
+  data-repo-id="R_kgDONejS_g"
+  data-category="Announcements"
+  data-category-id="DIC_kwDONejS_s4CnmfQ"
+  data-mapping="pathname"
+  data-strict="0"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="bottom"
+  data-theme="preferred_color_scheme"
+  data-lang="en"
+  crossorigin="anonymous"
+  async>
+</script>
+</div>
   <Button
     variant="outline"
     size="icon"
@@ -197,4 +214,5 @@ const authors = await parseAuthors(post.data.authors ?? [])
       }
     })
   </script>
+  
 </Layout>

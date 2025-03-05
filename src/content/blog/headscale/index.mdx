@@ -1,17 +1,150 @@
 ---
-title: 'Headscale + Pocket ID + Headplane installieren'
-description: 'Pocket ID ist ein einfacher OIDC-Anbieter, der es Benutzern ermöglicht, sich mit ihren Passkeys bei Ihren Diensten zu authentifizieren.'
-date: 2025-12-22
-tags: ['oidc', 'open-source', 'passkey', 'identity-provider', 'pocket-id']
+title: 'Headscale + Headplane mit Docker und Traefik installieren'
+description: 'Headscale ist eine selbstgehostete Open-Source-Implementierung des Tailscale-Kontrollservers. Headplane dient als WebUI zur einfachen Handhabung'
+date: 2025-02-20
+tags: ['oidc', 'open-source', 'passkey', 'vpn', 'wireguard', 'headplane', 'headscale']
 image: './headscale-logo.png'
 authors: ['tobias']
 draft: true
 ---
 
-## Intro 
+## 1. Intro 
 
-Pocket ID ist ein einfacher OIDC-Anbieter, der es Benutzern ermöglicht, sich mit ihren Passkeys bei Ihren Diensten zu authentifizieren.
+In dieser Anleitung zeige ich, wie man **Headscale** mit Docker, Traefik, Cloudflare DNS und Headplane WebUI installiert. 
+**Headscale** ist eine selbstgehostete Open-Source-Implementierung des **Tailscale-Kontrollservers**. 
 
-Das Ziel von Pocket ID ist es, einfach und benutzerfreundlich zu sein. Es gibt andere selbst gehostete OIDC Anbieter wie Keycloak oder Authentik, aber diese sind oft zu komplex für einfache Anwendungsfälle.
+**Tailscale** ist ein benutzerfreundliches VPN, das auf WireGuard basiert und eine einfache, sichere Netzwerkverbindung zwischen Geräten ermöglicht, 
+ohne komplexe Konfigurationen. 
 
-Eine Besonderheit von Pocket ID ist, dass es nur die Passkey-Authentifizierung unterstützt, was bedeutet, dass du kein Passwort benötigen. Zum Beispiel kannst du jetzt einen physischen Yubikey verwenden, um dich einfach und sicher bei all deinen selbst gehosteten Diensten anzumelden.
+Es nutzt eine **Zero-Trust-Architektur,** um den Netzwerkverkehr zu sichern und erleichtert den Zugriff auf Ressourcen, 
+unabhängig vom Standort der Benutzer. Zusätzlich integrieren wir in dieser Anleitung die Headplane-Web-UI und richten eine 
+OIDC-Authentifizierung (OpenID Connect) ein.
+
+---
+
+### 1.1 Vorwort
+
+**Begriffsdefinitionen**
+
+Bevor wir ins Detail gehen, klären wir zunächst einige wichtige Begriffe:
+
+* **WireGuard:** Ein modernes, schnelles und sicheres VPN-Protokoll, das für seine einfache Konfiguration und hohe Performance bekannt ist.
+* **Tailscale:** Ein auf WireGuard basierender VPN-Dienst, der es ermöglicht, private Netzwerke einfach über das Internet aufzubauen.
+* **Headscale:** Eine Open-Source-Alternative zu Tailscale, mit der du deine eigene Tailscale-Instanz selbst hosten kannst.
+* **Tailnet:** Das private Netzwerk, das durch Tailscale bzw. Headscale erstellt wird. Alle verbundenen Geräte innerhalb dieses Netzwerks können sicher miteinander kommunizieren.
+
+**Setup-Beschreibung**
+
+Mein Setup dient dazu, self-hosted Services wie z. B. Vaultwarden sicher bereitzustellen. Dabei werden SSL-Zertifikate ausgestellt, aber die Services selbst nicht öffentlich im Internet exponiert. Stattdessen sind sie nur erreichbar, wenn ich über mein VPN verbunden bin.
+
+Eine besonders nützliche Funktion ist die WebUI mit Headplane, die mir ermöglicht, mit nur einem Befehl WireGuard auf meinen Geräten zu installieren und mit einem zweiten Befehl mein Gerät in mein Tailnet einzubinden.
+
+Selbst Geräte, die WireGuard nicht direkt unterstützen (wie z. B. Drucker), kann ich mit Subnet-Routing in mein VPN aufnehmen. Dadurch sind auch diese Geräte über mein sicheres Netzwerk erreichbar.
+
+Zusätzlich unterstützt mein Setup Tailscale SSH, womit ich ohne manuelle SSH-Konfiguration auf alle meine Nodes zugreifen kann – allerdings nur, wenn ich mich innerhalb meines Tailnet-VPNs befinde.
+
+---
+
+## 2. Voraussetzungen
+
+Bevor wir starten, stellt sicher, dass folgende Voraussetzungen erfüllt sind:
+
+- [Docker & Docker Compose v2](/blog/server-setup#5-docker-und-docker-compose)
+- [Traefik Setup](/blog/traefik)
+
+---
+
+## 3. Ordnerstruktur erstellen
+
+```
+mkdir -p /opt/containers/headscale/{headscale/{config,data}
+```
+
+### 3.1 Docker Compose Dateien
+
+```
+nano /opt/containers/headscale/docker-compose.yml
+```
+
+```yml title="docker-compose.yml"
+---
+services:
+  headscale:
+    image: headscale/headscale:0.25.0 #Pinned!!!
+    container_name: headscale
+    command: serve
+    restart: unless-stopped
+    volumes:
+      - ./headscale/config:/etc/headscale
+      - ./headscale/data:/var/lib/headscale
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.headscale.entrypoints=websecure"
+      - "traefik.http.routers.headscale.rule=Host(`hs.domain.de`)"
+      - "traefik.http.routers.headscale.service=headscale"
+      - "traefik.http.routers.headscale.tls=true"
+      - "traefik.http.routers.headscale.tls.certresolver=cloudflare"
+      - "traefik.http.services.headscale.loadbalancer.server.port=8080"
+      - "traefik.docker.network=frontend"
+    networks:
+      - frontend
+
+  headplane:
+    container_name: headplane
+    image: ghcr.io/tale/headplane:0.3.9 # Pinned!
+    restart: unless-stopped
+    volumes:
+      - ./headscale/data:/var/lib/headscale
+      - ./headscale/config:/etc/headscale
+      - ./headscale/config/config.yml:/etc/headscale/config.yml
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - '3000:3000'
+    environment:
+      COOKIE_SECRET: 'sicheresS3cret-generieren- pwgen 64 1'
+      HEADSCALE_URL: 'https://hs.domain.de'
+      HEADSCALE_INTEGRATION: 'docker'
+      HEADSCALE_CONTAINER: 'headscale'
+      DISABLE_API_KEY_LOGIN: 'false'
+      HOST: '0.0.0.0'
+      PORT: '3000'
+      COOKIE_SECURE: 'true'
+      ROOT_API_KEY: 'sicheresS3cret-generieren- pwgen 64 1'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.headplane.entrypoints=websecure"
+      - "traefik.http.routers.headplane.rule=Host(`hs.domain.de`) && PathPrefix(`/admin`)"
+      - "traefik.http.routers.headplane.service=headplane"
+      - "traefik.http.routers.headplane.tls=true"
+      - "traefik.http.routers.headplane.tls.certresolver=cloudflare"
+      - "traefik.http.services.headplane.loadbalancer.server.port=3000"
+      - "traefik.docker.network=frontend"
+    networks:
+      - frontend
+networks:
+  frontend:
+    external: true
+```
+
+**Anpassen:**
+* COOKIE_SECRET: ‘sicher’
+* HEADSCALE_URL: ‘https://hs.domain.de’
+* ROOT_API_KEY: ‘auch-sicher’
+* 2x Traefik Labels Host(`hs.domain.de`)"
+
+### 3.2 Headscale Config
+
+Um die aktuelle Headscale-Konfigurationsdatei zu erhalten, laden wir die Vorlage direkt aus dem Headscale GitHub-Repository herunter. Diese Datei wird als Basis dienen, um die notwendigen Anpassungen für unser Setup vorzunehme
+```
+sudo curl -o /opt/containers/headscale/headscale/config/config.yaml https://raw.githubusercontent.com/juanfont/headscale/refs/heads/main/config-example.yaml
+```
+
+Nun hast du die aktuelle Headscale-Konfigurationsdatei auf deinem Server gespeichert und kannst sie für deine Anforderungen anpassen.
+nano /opt/containers/headscale/headscale/config/config.yaml
+
+* server_url: https://hs.domain.de
+* listen_addr: 0.0.0.0:8080
+* base_domain: headscale.domain.de
+* oidc: ist Optional < - gehe ich später drauf ein
+
+Die beiden Domains hs.domain.de und headscale.domain.de sollten beide per A-Record auf eure Server-IP zeigen.
