@@ -10,15 +10,12 @@ draft: true
 
 ## 1. Intro 
 
-In dieser Anleitung zeige ich, wie man **Headscale** mit Docker, Traefik, Cloudflare DNS und Headplane WebUI installiert. 
-**Headscale** ist eine selbstgehostete Open-Source-Implementierung des **Tailscale-Kontrollservers**. 
+Wie ich Traefik installiere und konfiguriere, habe ich ja bereits ausführlich beschrieben. Der wohl wichtigste Dienst neben Traefik ist Headscale.
 
-**Tailscale** ist ein benutzerfreundliches VPN, das auf WireGuard basiert und eine einfache, sichere Netzwerkverbindung zwischen Geräten ermöglicht, 
-ohne komplexe Konfigurationen. 
+Headscale ist eine selbstgehostete Open-Source-Implementierung des Tailscale-Kontrollservers.
+Tailscale wiederum ist ein benutzerfreundliches VPN, das auf WireGuard basiert und eine einfache, sichere Netzwerkverbindung zwischen Geräten ermöglicht – ganz ohne komplizierte Konfigurationen. Es setzt auf eine Zero-Trust-Architektur, um den Netzwerkverkehr zu sichern, und erleichtert den Zugriff auf Ressourcen, unabhängig vom Standort der Nutzer.
 
-Es nutzt eine **Zero-Trust-Architektur,** um den Netzwerkverkehr zu sichern und erleichtert den Zugriff auf Ressourcen, 
-unabhängig vom Standort der Benutzer. Zusätzlich integrieren wir in dieser Anleitung die Headplane-Web-UI und richten eine 
-OIDC-Authentifizierung (OpenID Connect) ein.
+In dieser Anleitung integrieren wir zusätzlich die Headplane-Web-UI und richten eine OIDC-Authentifizierung (OpenID Connect) ein.
 
 ---
 
