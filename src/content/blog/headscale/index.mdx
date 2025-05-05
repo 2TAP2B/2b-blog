@@ -434,7 +434,40 @@ Dieser Ansatz bietet eine energieeffiziente Lösung für die Nutzung von Tailsca
 
 ---
 
-## 9. Schlusswort
+## 9. Headscale SSH
+
+Um die Vorteile von Headscale SSH voll auszuschöpfen, müssen wir einmal in der Headplane-UI unter `Access Control` Folgendes eintragen:
+```json
+    {
+  "acls": [
+    {
+      "action": "accept",
+      "src": ["*"],
+      "dst": ["*:*"]
+    }
+  ],
+  "ssh": [
+    {
+      "action": "accept",
+      "src": ["*"],
+      "dst": ["*"],
+      "users": ["*"]
+    }
+  ]
+}
+```
+
+Mit diesen Einstellungen ist nun auch Headscale SSH möglich. Das bedeutet, ihr könnt euch per SSH mit euren Maschinen verbinden, ohne vorher SSH-Keys austauschen zu müssen – vorausgesetzt, ihr befindet euch im Tailnet.
+
+Die bestehende SSH-Konfiguration `(/etc/ssh/sshd_config)` sowie die Schlüsseldateien `(~/.ssh/authorized_keys)` bleiben dabei unverändert. Das heißt, andere SSH-Verbindungen zum selben Host, die nicht über Tailscale laufen, funktionieren weiterhin wie gewohnt.
+
+Um Headscale SSH zu aktivieren, führt folgenden Befehl aus:
+```bash
+tailscale up --ssh
+``` 
+Dieses Flag muss auf jedem Server gesetzt werden, der per SSH erreichbar sein soll.
+
+## 10. Schlusswort
 
 So ähnlich habe ich mein Setup schon mal auf [goneuland.de](https://goneuland.de) beschrieben – dort allerdings noch mit Caddy als Reverse-Proxy. Ich habe viele Anleitungen von dort durchgearbeitet und viel gelernt. Die Grundvoraussetzung dort ist jedoch ein Traefik-Stack, der keine `dns-01`-Challenge unterstützt. Deshalb habe ich hier mein eigenes Traefik-Setup beschrieben und diese Anleitung entsprechend angepasst.
 
